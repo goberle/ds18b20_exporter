@@ -1,11 +1,14 @@
-FROM golang:1.17
+FROM golang:1.22
 
-WORKDIR /go/src/app
-COPY . .
+WORKDIR /app
 
-RUN go get -d -v ./...
-RUN go install -v ./...
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY *.go ./
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o /ds18b20_exporter
 
 EXPOSE 9101
 
-CMD ["ds18b20_exporter"]
+CMD ["/ds18b20_exporter"]
